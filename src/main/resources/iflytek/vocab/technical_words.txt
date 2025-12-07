@@ -1,0 +1,52 @@
+# src/main/resources/iflytek/vocab/technical_words.txt
+
+# 编程术语
+Spring Boot
+微服务
+RESTful API
+Docker
+Kubernetes
+CI/CD
+GitHub
+GitLab
+敏捷开发
+Scrum
+单元测试
+集成测试
+前端框架
+后端开发
+全栈
+DevOps
+云原生
+人工智能
+机器学习
+深度学习
+神经网络
+数据挖掘
+大数据
+Hadoop
+Spark
+SQL
+NoSQL
+Redis
+MongoDB
+消息队列
+RabbitMQ
+Kafka
+分布式系统
+高并发
+高可用
+负载均衡
+容器化
+虚拟化
+服务网格
+Istio
+服务发现
+配置中心
+API网关
+OAuth2
+JWT
+单点登录
+权限控制
+RBAC
+ABAC
