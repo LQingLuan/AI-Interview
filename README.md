@@ -13,16 +13,10 @@
 ### 🖼️ 截图展示
 
 <table>
-  <tr>
-    <td width="33%"><img src="E:\Picture\photo\Ai-interview\ai_interview.png" alt="仪表板" width="600" height="300"></td>
-    <td width="33%"><img src="docs/screenshots/interview-room.png" alt="面试房间"></td>
-    <td width="33%"><img src="docs/screenshots/analytics.png" alt="数据分析"></td>
-  </tr>
-  <tr>
-    <td align="center"><strong>智能仪表板</strong></td>
-    <td align="center"><strong>实时面试房间</strong></td>
-    <td align="center"><strong>深度分析报告</strong></td>
-  </tr>
+<img width="1918" height="1078" alt="ai_interview" src="https://github.com/user-attachments/assets/d97d0509-e380-4aaa-a4d3-65f5f013b1c0" />
+<img width="1918" height="1078" alt="2" src="https://github.com/user-attachments/assets/4e34b0d6-3e19-4ba3-bfea-464ebd98319a" />
+<img width="1920" height="1080" alt="3" src="https://github.com/user-attachments/assets/ba249fe6-96d7-49f9-89aa-70f9030cb3c1" />
+<img width="1920" height="1080" alt="4" src="https://github.com/user-attachments/assets/5fdfde98-1f3c-4e26-9f31-2ecafb468059" />
 </table>
 
 ## 🚀 快速开始
