@@ -2222,3 +2222,85 @@ Caused by: org.json.JSONException: JSONObject["content"] not found.
 2025-12-08 18:13:21.723 [SpringApplicationShutdownHook] WARN  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-224]
 2025-12-08 18:13:21.724 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2025-12-08 18:13:21.726 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-12-08 18:16:26.199 [restartedMain] INFO  c.u.s.SmartInterviewApplication - Starting SmartInterviewApplication using Java 21.0.7 with PID 6904 (E:\DestApp\pms-master(1)\AI-Interview\target\classes started by 25641 in E:\DestApp\pms-master(1)\AI-Interview)
+2025-12-08 18:16:26.204 [restartedMain] DEBUG c.u.s.SmartInterviewApplication - Running with Spring Boot v3.2.4, Spring v6.1.5
+2025-12-08 18:16:26.205 [restartedMain] INFO  c.u.s.SmartInterviewApplication - No active profile set, falling back to 1 default profile: "default"
+2025-12-08 18:16:26.266 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2025-12-08 18:16:26.266 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2025-12-08 18:16:27.360 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-08 18:16:27.361 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-08 18:16:27.398 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 30 ms. Found 0 JPA repository interfaces.
+2025-12-08 18:16:27.414 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-12-08 18:16:27.415 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-12-08 18:16:27.428 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 4 ms. Found 0 Redis repository interfaces.
+2025-12-08 18:16:28.530 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-12-08 18:16:28.544 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-12-08 18:16:28.545 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2025-12-08 18:16:28.601 [restartedMain] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-12-08 18:16:28.601 [restartedMain] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2335 ms
+2025-12-08 18:16:28.778 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-12-08 18:16:29.023 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:ef083d18-915d-4e58-a1e7-2d0e3d06bf2f user=SA
+2025-12-08 18:16:29.028 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-12-08 18:16:29.039 [restartedMain] INFO  o.s.b.a.h.H2ConsoleAutoConfiguration - H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:ef083d18-915d-4e58-a1e7-2d0e3d06bf2f'
+2025-12-08 18:16:29.436 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-08 18:16:29.492 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.4.4.Final
+2025-12-08 18:16:29.523 [restartedMain] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-12-08 18:16:29.762 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-08 18:16:30.033 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-08 18:16:30.037 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-08 18:16:30.098 [restartedMain] INFO  c.u.s.controller.InterviewController - >>>> InterviewController 已初始化 <<<<
+2025-12-08 18:16:30.640 [restartedMain] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-12-08 18:16:30.803 [restartedMain] TRACE o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.u.s.c.ConfigController:
+	{GET [/api/config/iflytek]}: getIflytekConfig()
+2025-12-08 18:16:30.809 [restartedMain] TRACE o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.u.s.c.IflytekController:
+	{GET [/iflytek/config]}: getSparkAIConfig()
+	{POST [/iflytek/direct-call]}: directCallToSparkAI(SparkAIRequest)
+	{GET [/iflytek/generate-question]}: generateQuestionDirectly(String)
+	{POST [/iflytek/generate-feedback]}: generateFeedbackDirectly(String,String)
+2025-12-08 18:16:30.817 [restartedMain] TRACE o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.u.s.c.InterviewController:
+	{POST [/start]}: startInterview(InterviewStartReq)
+	{POST [/submit-answer]}: submitAnswer(AnswerSubmitRequest)
+	{GET [/ping]}: ping()
+	{GET [/history]}: getInterviewHistory(String)
+2025-12-08 18:16:30.818 [restartedMain] TRACE o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	c.u.s.c.TaskController:
+	{GET [/tasks/{taskId}]}: getTaskStatus(String)
+2025-12-08 18:16:30.822 [restartedMain] TRACE o.s.w.s.m.m.a.RequestMappingHandlerMapping - 
+	o.s.b.a.w.s.e.BasicErrorController:
+	{ [/error]}: error(HttpServletRequest)
+	{ [/error], produces [text/html]}: errorHtml(HttpServletRequest,HttpServletResponse)
+2025-12-08 18:16:30.830 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerMapping - 12 mappings in 'requestMappingHandlerMapping'
+2025-12-08 18:16:31.111 [restartedMain] DEBUG o.s.w.s.m.m.a.RequestMappingHandlerAdapter - ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-12-08 18:16:31.154 [restartedMain] DEBUG o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-12-08 18:16:31.912 [restartedMain] INFO  o.s.b.d.a.OptionalLiveReloadServer - LiveReload server is running on port 35729
+2025-12-08 18:16:31.926 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoint(s) beneath base path '/actuator'
+2025-12-08 18:16:32.013 [restartedMain] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2025-12-08 18:16:32.022 [restartedMain] INFO  c.u.s.SmartInterviewApplication - Started SmartInterviewApplication in 6.278 seconds (process running for 6.734)
+2025-12-08 18:16:37.759 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-08 18:16:37.760 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-12-08 18:16:37.762 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2025-12-08 18:16:37.796 [http-nio-8080-exec-1] TRACE o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.university.smartinterview.controller.ConfigController#getIflytekConfig()
+2025-12-08 18:16:37.858 [http-nio-8080-exec-1] DEBUG o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-12-08 18:16:37.859 [http-nio-8080-exec-1] TRACE o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Writing [{apiKey=499e0f82b7007b342a200d1f6157eee5, apiUrl=wss://iat-api.xfyun.cn/v2/iat, appId=36b21c70, apiSecret=ZWFhYjJiMWViNmFmZGIwYTdlYThiMjAz}]
+2025-12-08 18:16:37.874 [http-nio-8080-exec-1] TRACE o.s.w.s.m.m.a.RequestMappingHandlerAdapter - Applying default cacheSeconds=-1
+2025-12-08 18:16:46.902 [http-nio-8080-exec-2] TRACE o.s.w.s.m.m.a.RequestMappingHandlerMapping - Mapped to com.university.smartinterview.controller.InterviewController#startInterview(InterviewStartReq)
+2025-12-08 18:16:46.968 [http-nio-8080-exec-2] TRACE o.s.w.s.m.m.a.RequestResponseBodyMethodProcessor - Read "application/json;charset=UTF-8" to [com.university.smartinterview.dto.request.InterviewStartReq@6e00381c]
+2025-12-08 18:16:50.527 [http-nio-8080-exec-2] INFO  c.u.s.controller.InterviewController - 生成面试问题 - 方向: 牙医, 难度: 2, 问题: ```json
+{
+  "question": "请描述一种常见的牙科疾病，并解释其成因、症状以及治疗方法。",
+  "category": "专业知识",
+  "difficulty": "难度级别2",
+  "criteria": "候选人需要展示对牙科疾病的深入了解，包括疾病名称、可能的成因、典型症状以及推荐的治疗方案。",
+  "answer": "参考答案：最常见的牙科疾病是龋齿（蛀牙）。它通常是由细菌代谢食物残渣产生的酸引起的。症状包括牙齿敏感、疼痛、颜色改变和有时伴有牙龈出血。治疗通常包括口腔卫生教育、使用抗菌牙膏、定期洁牙以及必要时进行补牙或根管治疗。"
+}
+```
+2025-12-08 18:16:50.539 [http-nio-8080-exec-2] DEBUG o.s.w.s.m.m.a.HttpEntityMethodProcessor - Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-12-08 18:16:50.539 [http-nio-8080-exec-2] TRACE o.s.w.s.m.m.a.HttpEntityMethodProcessor - Writing [com.university.smartinterview.dto.response.ResponseWrapper@436f4209]
+2025-12-08 18:16:50.546 [http-nio-8080-exec-2] TRACE o.s.w.s.m.m.a.RequestMappingHandlerAdapter - Applying default cacheSeconds=-1
+2025-12-08 18:17:25.335 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-08 18:17:25.345 [SpringApplicationShutdownHook] WARN  o.s.b.f.s.DisposableBeanAdapter - Invocation of destroy method failed on bean with name 'inMemoryDatabaseShutdownExecutor': org.h2.jdbc.JdbcSQLNonTransientConnectionException: Database is already closed (to disable automatic closing at VM shutdown, add ";DB_CLOSE_ON_EXIT=FALSE" to the db URL) [90121-224]
+2025-12-08 18:17:25.346 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-12-08 18:17:25.349 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

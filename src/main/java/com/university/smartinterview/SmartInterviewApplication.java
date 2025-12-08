@@ -1,6 +1,5 @@
 package com.university.smartinterview;
 
-import com.university.smartinterview.utils.AudioConverter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -55,11 +54,4 @@ public class SmartInterviewApplication {
                         "╚═══════════════════════════════════════════════════════════════════════╝");
     }
 
-    /**
-     * 音频转换工具Bean
-     */
-    @Bean
-    public AudioConverter audioConverter() {
-        return new AudioConverter();
-    }
 }
