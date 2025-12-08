@@ -13,7 +13,21 @@ document.addEventListener('DOMContentLoaded', async function() {
     const recognitionResult = document.getElementById('recognitionResult');
     const visualizer = document.getElementById('visualizer');
     const interviewPage = document.getElementById('interviewPage');
-    const API_BASE_URL = window.location.origin;
+    const API_BASE_URL = (function() {
+        if (window.location.hostname === 'localhost' && window.location.port === '63342') {
+            // IDE预览模式
+            return 'http://localhost:8080';
+        } else if (window.location.hostname === 'localhost' && window.location.port === '3000') {
+            // 前端开发服务器
+            return 'http://localhost:8080';
+        } else if (window.location.hostname === 'localhost' && window.location.port === '8080') {
+            // 静态文件由Spring Boot提供
+            return window.location.origin;
+        } else {
+            // 生产环境
+            return window.location.origin;
+        }
+    })();
     const feedbackPage = document.getElementById('feedbackPage');
     const startInterviewBtn = document.getElementById('startInterviewBtn');
     const submitAnswerBtn = document.getElementById('submitAnswerBtn');

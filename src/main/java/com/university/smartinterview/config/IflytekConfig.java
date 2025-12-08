@@ -10,20 +10,6 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "iflytek")
 public class IflytekConfig {
 
-    // ============ 删除语音相关配置 ============
-    // @Value("${iflytek.speech.ws-url}")  // 删除
-    // private String speechWsUrl;        // 删除
-
-    // @Value("${iflytek.speech.format}") // 删除
-    // private String audioFormat;        // 删除
-
-    // @Value("${iflytek.speech.domain}") // 删除
-    // private String speechDomain;       // 删除
-
-    // @Value("${iflytek.speech.accent}") // 删除
-    // private String speechAccent;       // 删除
-
-    // ============ 保留星火AI配置 ============
     @Value("${iflytek.spark.api-url}")
     private String sparkApiUrl;
 
@@ -36,10 +22,9 @@ public class IflytekConfig {
     @Value("${iflytek.spark.api-secret}")
     private String sparkApiSecret;
 
-    // ============ 保留前端语音识别需要的配置 ============
-    private String appId;        // 前端需要
-    private String apiKey;       // 前端需要
-    private String apiSecret;    // 前端需要
+    private String appId;
+    private String apiKey;
+    private String apiSecret;
     private String apiUrl = "wss://iat-api.xfyun.cn/v2/iat";  // 前端需要
 
     // Getters and Setters
@@ -60,17 +45,6 @@ public class IflytekConfig {
     public SparkAIConfig sparkAIConfig() {
         return new SparkAIConfig(sparkApiUrl, sparkAppId, sparkApiKey, sparkApiSecret);
     }
-
-    // ============ 删除语音配置Bean ============
-    // @Bean  // 删除
-    // public SpeechRecognitionConfig speechConfig() {
-    //     return new SpeechRecognitionConfig(speechWsUrl, audioFormat, speechDomain, speechAccent);
-    // }
-
-    // ============ 删除语音识别配置参数类 ============
-    // public static class SpeechRecognitionConfig { // 删除
-    //     // ...
-    // }
 
     // 讯飞星火配置参数类（保留）
     public static class SparkAIConfig {
