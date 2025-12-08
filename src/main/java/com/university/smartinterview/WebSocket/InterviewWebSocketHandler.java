@@ -2,7 +2,6 @@
 package com.university.smartinterview.WebSocket;
 
 import com.university.smartinterview.dto.response.FeedbackRes;
-import com.university.smartinterview.dto.response.SpeechRecognitionRes;
 import com.university.smartinterview.event.TaskUpdateEvent;
 import com.university.smartinterview.task.TaskProgressTracker.TaskStatus;
 import org.springframework.context.event.EventListener;
@@ -65,23 +64,7 @@ public class InterviewWebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    public void sendSpeechResult(String sessionId, SpeechRecognitionRes result) {
-        WebSocketSession session = sessionMap.get(sessionId);
-        if (session != null && session.isOpen()) {
-            try {
-                String message = String.format(
-                        "{\"type\":\"SPEECH_RESULT\",\"partialResult\":\"%s\",\"finalResult\":\"%s\",\"isFinal\":%b,\"progress\":%d}",
-                        escapeJson(result.getPartialResult()),
-                        escapeJson(result.getFinalResult()),
-                        result.isFinal(),
-                        result.getProgress()
-                );
-                session.sendMessage(new TextMessage(message));
-            } catch (IOException e) {
-                // 处理发送失败
-            }
-        }
-    }
+
 
     public void sendFeedbackComplete(String sessionId, FeedbackRes feedback) {
         WebSocketSession session = sessionMap.get(sessionId);
@@ -142,9 +125,4 @@ public class InterviewWebSocketHandler extends TextWebSocketHandler {
         this.sendError(event.getSessionId(), event.getErrorCode(), event.getErrorMessage());
     }
 
-    @Async
-    @EventListener
-    public void handleSpeechEvent(SpeechRecognitionEvent event) {
-        this.sendSpeechResult(event.getSessionId(), event.getResult());
-    }
 }

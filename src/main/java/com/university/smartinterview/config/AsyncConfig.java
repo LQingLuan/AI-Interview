@@ -37,15 +37,4 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
-
-    @Bean(name = "speechProcessingExecutor")
-    public Executor speechProcessingExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(10);
-        executor.setMaxPoolSize(50);
-        executor.setQueueCapacity(200);
-        executor.setThreadNamePrefix("Speech-Processing-");
-        executor.initialize();
-        return executor;
-    }
 }

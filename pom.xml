@@ -26,11 +26,9 @@
         <!-- Dependency versions -->
         <lombok.version>1.18.30</lombok.version>
         <okhttp.version>4.12.0</okhttp.version>
-        <websocket.version>3.2.4</websocket.version>
         <jjwt.version>0.12.3</jjwt.version>
         <mysql.version>8.0.33</mysql.version>
         <h2.version>2.2.224</h2.version>
-        <mp3spi.version>1.9.5.4</mp3spi.version>
         <jib.version>3.4.0</jib.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
     </properties>
@@ -61,26 +59,15 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-json</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-cache</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>3.1.8</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
         </dependency>
 
         <!-- Database Support -->
@@ -101,13 +88,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Audio Processing -->
-        <dependency>
-            <groupId>com.googlecode.soundlibs</groupId>
-            <artifactId>mp3spi</artifactId>
-            <version>${mp3spi.version}</version>
-        </dependency>
-        <!-- HTTP Client -->
+        <!-- HTTP Client for calling external APIs (like iFlyTek Spark AI) -->
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -117,13 +98,6 @@
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
             <version>${okhttp.version}</version>
-        </dependency>
-
-        <!-- WebSocket Client -->
-        <dependency>
-            <groupId>org.java-websocket</groupId>
-            <artifactId>Java-WebSocket</artifactId>
-            <version>1.5.4</version>
         </dependency>
 
         <!-- Utilities -->
@@ -216,13 +190,11 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-
                 <configuration>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-
                         </exclude>
                     </excludes>
                     <jvmArguments>--enable-preview</jvmArguments>
@@ -305,7 +277,6 @@
                 <includes>
                     <include>static/**</include>
                     <include>templates/**</include>
-                    <include>iflytek/**</include>
                 </includes>
             </resource>
         </resources>
