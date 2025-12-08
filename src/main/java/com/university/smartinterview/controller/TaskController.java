@@ -1,4 +1,3 @@
-// src/main/java/com/university/smartinterview/controller/TaskController.java
 package com.university.smartinterview.controller;
 
 import com.university.smartinterview.dto.response.ResponseWrapper;

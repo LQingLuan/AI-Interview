@@ -1,4 +1,4 @@
-// src/main/java/com/university/smartinterview/controller/IflytekController.java
+/*
 package com.university.smartinterview.controller;
 
 import com.university.smartinterview.config.IflytekConfig;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 讯飞星火API代理控制器
  * 提供与讯飞星火API的直接交互端点
- */
+
 @RestController
 @RequestMapping("/iflytek")
 public class IflytekController {
@@ -34,7 +34,7 @@ public class IflytekController {
      * 直接调用讯飞星火API
      * @param request 包含问题和上下文
      * @return 星火API的原始响应
-     */
+
     @PostMapping("/direct-call")
     public ResponseEntity<String> directCallToSparkAI(@RequestBody IflytekDTO.SparkAIRequest request) {
         String response = sparkAIClient.callSparkAI(
@@ -48,7 +48,7 @@ public class IflytekController {
     /**
      * 获取讯飞API配置（前端可能需要这些配置建立直接连接）
      * @return 安全的配置信息（不含密钥）
-     */
+
     @GetMapping("/config")
     public ResponseEntity<IflytekDTO.SparkAIConfigResponse> getSparkAIConfig() {
         IflytekDTO.SparkAIConfigResponse config = new IflytekDTO.SparkAIConfigResponse(
@@ -63,7 +63,7 @@ public class IflytekController {
      * 生成面试题目（直接调用）
      * @param careerDirection 职业方向
      * @return 面试题目
-     */
+
     @GetMapping("/generate-question")
     public ResponseEntity<String> generateQuestionDirectly(
             @RequestParam String careerDirection) {
@@ -77,7 +77,7 @@ public class IflytekController {
      * @param question 面试问题
      * @param answer 用户回答
      * @return 反馈和建议
-     */
+
     @PostMapping("/generate-feedback")
     public ResponseEntity<String> generateFeedbackDirectly(
             @RequestParam String question,
@@ -87,3 +87,4 @@ public class IflytekController {
         );
     }
 }
+*/

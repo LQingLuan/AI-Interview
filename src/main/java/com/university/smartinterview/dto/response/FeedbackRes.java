@@ -13,9 +13,12 @@ public class FeedbackRes {
 
     // 维度评价内部类
     public static class DimensionEvaluation {
-        private String dimensionName; // 维度名称 (如: 技术能力, 沟通能力等)
-        private String score; // 维度得分
+        private String dimensionName; // 维度名称
+        private String score; // 维度得分（字符串格式）
         private String evaluation; // 维度评价
+
+        // 添加权重字段
+        private String weight;
 
         // Getters and Setters
         public String getDimensionName() {
@@ -40,6 +43,14 @@ public class FeedbackRes {
 
         public void setEvaluation(String evaluation) {
             this.evaluation = evaluation;
+        }
+
+        public String getWeight() {
+            return weight;
+        }
+
+        public void setWeight(String weight) {
+            this.weight = weight;
         }
     }
 

@@ -3,19 +3,25 @@ package com.university.smartinterview.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InterviewQuestionRes {
 
+    private String interviewId;  // 新增：数据库ID
+    private String questionText;
+    private String sessionId;    // 保持向后兼容，与interviewId相同
+    // Getters and Setters
+    @Getter
     private String questionId;
     @JsonProperty("question")
-    private String questionText;
     private String category;
     private String difficulty;
     private String suggestedAnswer;
     private String evaluationCriteria;
-    private String sessionId;
 
+    private String criteria;
+    private String sampleAnswer;
 
 
     public InterviewQuestionRes() {
@@ -28,17 +34,21 @@ public class InterviewQuestionRes {
     }
 
 
-    // Getters and Setters
-    public String getQuestionId() {
-        return questionId;
-    }
-
     public void setQuestionId(String questionId) {
         this.questionId = questionId;
     }
 
     public String getQuestionText() {
         return questionText;
+    }
+
+    public String getInterviewId() {
+        return interviewId;
+    }
+
+    public void setInterviewId(String interviewId) {
+        this.interviewId = interviewId;
+        this.sessionId = interviewId; // 同时设置 sessionId 保持兼容
     }
 
     public void setQuestionText(String questionText) {
@@ -84,4 +94,21 @@ public class InterviewQuestionRes {
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
+
+    public String getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(String criteria) {
+        this.criteria = criteria;
+    }
+
+    public String getSampleAnswer() {
+        return sampleAnswer;
+    }
+
+    public void setSampleAnswer(String sampleAnswer) {
+        this.sampleAnswer = sampleAnswer;
+    }
+
 }

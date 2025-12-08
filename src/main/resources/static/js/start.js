@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     let isFinalResultReceived = false;
     let currentQuestion = ""; // 存储当前问题
 
+    let currentInterviewId = null;  // 新增：当前面试的数据库ID
+
     // 新增：计时器相关变量
     let recordingStartTime = 0;
     let timeRemainingInterval = null;
@@ -690,146 +692,51 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     }
 
-    // 调用后端API生成面试问题
-    async function generateInterviewQuestion(career, difficulty) {
-        try {
-            console.log(`生成面试问题 - 职业方向: ${career}, 难度级别: ${difficulty}`);
-            const response = await fetch(`${API_BASE_URL}/start`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    careerDirection: career,
-                    difficultyLevel: difficulty
-                })
-            });
+    // 调用后端API生成面试问题函数
+        async function generateInterviewQuestion(career, difficulty) {
+            try {
+                    console.log(`生成面试问题 - 职业方向: ${career}, 难度级别: ${difficulty}`);
 
-            const data = await response.json();
-            console.log("后端返回数据:", data);
+                    const response = await fetch(`${API_BASE_URL}/api/interview/start`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            careerDirection: career,
+                            difficultyLevel: parseInt(difficulty)
+                        })
+                    });
 
-            if (response.ok) {
-                if (data && data.data) {
-                    let questionText = data.data.question;
-                    console.log("原始问题文本:", questionText);
+                    if (!response.ok) {
+                        throw new Error(`HTTP错误: ${response.status}`);
+                    }
 
-                    // 情况1：已经是纯文本问题
-                    if (typeof questionText === 'string' &&
-                        !questionText.includes('{') &&
-                        !questionText.includes('"question":')) {
-                        console.log("类型1: 纯文本问题");
+                    const result = await response.json();
+                    console.log("后端返回数据:", result);
+
+                    if (response.ok && result.code === 200 && result.data) {
+                        const questionData = result.data;
+                        console.log("问题数据:", questionData);
+
                         return {
-                            sessionId: data.data.sessionId,
-                            question: questionText
+                            interviewId: questionData.interviewId,
+                            sessionId: questionData.sessionId,
+                            question: questionData.questionText
                         };
+                    } else {
+                        throw new Error(result.message || '生成问题失败');
                     }
+                } catch (error) {
+                    console.error('生成问题失败:', error);
 
-                    // 情况2：包含JSON对象
-                    try {
-                        // 清理Markdown标记
-                        let cleanText = questionText
-                            .replace(/```json/g, '')
-                            .replace(/```/g, '')
-                            .trim();
-
-                        console.log("清理后文本:", cleanText);
-
-                        // 尝试解析JSON
-                        const parsed = JSON.parse(cleanText);
-
-                        // 提取question字段
-                        if (parsed.question) {
-                            console.log("类型2: JSON对象中的question字段");
-                            return {
-                                sessionId: data.data.sessionId,
-                                question: parsed.question
-                            };
-                        }
-
-                        // 可能嵌套在data属性中
-                        if (parsed.data && parsed.data.question) {
-                            console.log("类型3: 嵌套在data属性中");
-                            return {
-                                sessionId: data.data.sessionId,
-                                question: parsed.data.question
-                            };
-                        }
-
-                        console.warn("解析成功但未找到question字段:", parsed);
-                    } catch (e) {
-                        console.error('JSON解析失败:', e);
-                    }
-
-                    // 情况3：尝试手动提取
-                    const questionMatch = questionText.match(/"question":\s*"([^"]+)"/);
-                    if (questionMatch && questionMatch[1]) {
-                        console.log("类型4: 正则提取question字段");
-                        return {
-                            sessionId: data.data.sessionId,
-                            question: questionMatch[1]
-                        };
-                    }
-
-                    // 最终回退：显示原始内容
-                    console.warn("无法解析，使用原始文本");
                     return {
-                        sessionId: data.data.sessionId,
-                        question: questionText
+                        interviewId: "error-" + Date.now(),
+                        sessionId: "error-" + Date.now(),
+                        question: "问题生成失败: " + error.message
                     };
-                } else {
-                    throw new Error('无效的响应格式: ' + JSON.stringify(data));
                 }
-            } else {
-                throw new Error(data.message || '生成问题失败');
-            }
-        } catch (error) {
-            console.error('生成问题失败:', error);
-            return {
-                sessionId: "error-" + Date.now(),
-                question: "问题生成失败: " + error.message
-            };
         }
-    }
-
-    // ============ 修改：生成模拟面试反馈 ============
-    function generateMockInterviewFeedback(question, answer) {
-        console.log("生成模拟面试反馈 - 问题:", question, "回答:", answer);
-
-        // 根据回答长度生成模拟分数（5-9分之间）
-        const answerLength = answer.length;
-        let score = 5 + Math.min(4, Math.floor(answerLength / 100));
-
-        // 随机波动 ±0.5
-        score = Math.min(9.5, Math.max(5.5, score + (Math.random() - 0.5)));
-        const overallScore = score.toFixed(1) + '/10';
-
-        // 生成模拟反馈数据
-        return {
-            overallFeedback: `您的回答整体表现${score > 7 ? '良好' : '一般'}。${score > 7 ?
-                '能够清晰表达技术观点，但部分细节需要完善' :
-                '需要加强技术深度和逻辑性表达'}`,
-            improvementSuggestions: [
-                "尝试使用更专业的技术术语",
-                "组织回答时采用'问题-原因-解决方案'结构",
-                "增加具体案例或项目经验说明",
-                "控制语速，保持平稳的叙述节奏",
-                "在回答前先思考10秒组织语言"
-            ],
-            skillDimensions: {
-                professionalKnowledge: score > 8 ? '展现出扎实的专业知识基础' :
-                    '基础概念掌握良好，但深度有待加强',
-                problemSolving: score > 7.5 ? '问题分析能力较强，解决方案合理' :
-                    '问题解决思路清晰，但可提供更多替代方案',
-                communication: score > 7 ? '表达流畅，逻辑基本清晰' :
-                    '表达需要更有条理，建议使用结构化回答',
-                technicalDepth: score > 8 ? '展示了良好的技术深度和细节把握' :
-                    '技术深度有待加强，可深入底层原理',
-                logicalThinking: score > 7.5 ? '逻辑清晰，推理合理' :
-                    '逻辑性需加强，建议使用分点论述'
-            },
-            overallScore: overallScore
-        };
-    }
 
     // 开始面试
     startInterviewBtn.addEventListener('click', async function() {
@@ -857,15 +764,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         try {
             // 调用后端API生成问题
-            const { sessionId, question } = await generateInterviewQuestion(career, difficulty);
-            console.log("生成的问题:", question, "sessionId:", sessionId);
+            const questionData = await generateInterviewQuestion(career, difficulty);
+            console.log("生成的问题:", questionData.question, "sessionId:", questionData.sessionId);
 
             // 保存sessionId和当前问题
-            currentSessionId = sessionId;
-            currentQuestion = question;
+            currentSessionId = questionData.sessionId;
+            currentInterviewId = questionData.interviewId;  // 新增：保存数据库ID
+            currentQuestion = questionData.question;
 
-            // 显示问题部分
-            if (questionContent) questionContent.textContent = question;
+            if (questionContent) questionContent.textContent = currentQuestion;
 
             // 重置按钮状态
             if (startInterviewBtn) {
@@ -911,14 +818,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (submitAnswerBtn) {
         submitAnswerBtn.addEventListener('click', async function() {
             const question = currentQuestion || (questionContent ? questionContent.textContent : "");
-
-            // 使用保存的最终识别结果作为回答内容
             const answer = finalRecognitionResult || (recognitionResult ? recognitionResult.textContent : "");
-            console.log("提交回答 - 问题:", question, "回答:", answer);
+
+            console.log("提交回答 - 问题:", question, "回答:", answer, "sessionId:", currentSessionId);
 
             if (!answer || answer === "您的回答将实时显示在这里..." ||
                 answer === "语音识别中..." || answer === "正在获取最终结果...") {
                 alert('请先完成录音回答');
+                return;
+            }
+
+            if (!currentSessionId) {
+                console.error("缺少 sessionId");
+                alert('系统错误：缺少会话ID');
                 return;
             }
 
@@ -928,70 +840,192 @@ document.addEventListener('DOMContentLoaded', async function() {
                 submitAnswerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 分析回答中...';
             }
 
-            // 使用setTimeout模拟API延迟
-            setTimeout(() => {
-                try {
-                    // 生成模拟反馈数据
-                    const feedbackData = generateMockInterviewFeedback(question, answer);
-                    console.log("模拟反馈数据:", feedbackData);
+            try {
+                console.log("调用后端反馈接口...");
+                const response = await fetch(`${API_BASE_URL}/api/interview/submit-answer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        interviewId: currentInterviewId,  // 使用interviewId而不是sessionId
+                        answerText: answer,
+                        userId: 'anonymous'
+                    })
+                });
 
-                    // 填充反馈页面数据
-                    if (feedbackQuestion) feedbackQuestion.textContent = question;
-                    if (userAnswer) userAnswer.textContent = answer;
-                    if (overallFeedback) overallFeedback.textContent = feedbackData.overallFeedback;
+                console.log("后端响应状态:", response.status);
 
-                    // 显示改进建议
-                    if (improvementSuggestions) {
-                        improvementSuggestions.innerHTML = feedbackData.improvementSuggestions.map(sugg =>
-                            `<div class="suggestion-item"><i class="fas fa-lightbulb text-warning"></i> ${sugg}</div>`
-                        ).join('');
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("后端返回错误:", errorText);
+                    throw new Error(`请求失败: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                if (result.code === 200 && result.data) {
+                    const questionData = result.data;
+                    currentInterviewId = questionData.interviewId;  // 保存interviewId
+                    currentQuestion = questionData.questionText;
+
+                    // 显示问题
+                    if (questionContent) {
+                        questionContent.textContent = currentQuestion;
+                    }
+                }
+                console.log("后端返回数据:", result);
+
+                // 检查响应结构
+                if (result.code !== 200) {
+                    console.error("后端业务错误:", result.message);
+                    throw new Error(result.message || '反馈生成失败');
+                }
+
+                const feedbackData = result.data;
+                console.log("反馈数据:", feedbackData);
+
+                // 检查必要字段
+                if (!feedbackData || !feedbackData.overallScore) {
+                    console.error("无效的反馈数据:", feedbackData);
+                    throw new Error('返回的反馈数据格式不正确');
+                }
+
+                // ============ 填充反馈页面数据 ============
+                // 填充问题
+                if (feedbackQuestion) feedbackQuestion.textContent = question;
+
+                // 填充用户回答
+                if (userAnswer) userAnswer.textContent = answer;
+
+                // 填充总体反馈
+                if (overallFeedback) {
+                    overallFeedback.textContent = feedbackData.overallFeedback || "暂无总体评价";
+                }
+
+                // 填充改进建议
+                if (improvementSuggestions) {
+                    const suggestions = feedbackData.improvementSuggestions || [];
+                    improvementSuggestions.innerHTML = suggestions.map(sugg =>
+                        `<div class="suggestion-item"><i class="fas fa-lightbulb text-warning"></i> ${sugg}</div>`
+                    ).join('');
+
+                    if (suggestions.length === 0) {
+                        improvementSuggestions.innerHTML = '<div class="suggestion-item"><i class="fas fa-info-circle"></i> 暂无改进建议</div>';
+                    }
+                }
+
+                // 处理维度评价
+                let technicalFeedbackText = "";
+                let communicationFeedbackText = "";
+
+                if (feedbackData.dimensions && feedbackData.dimensions.length > 0) {
+                    // 查找技术深度维度
+                    const technicalDim = feedbackData.dimensions.find(d =>
+                        d.dimensionName && (
+                            d.dimensionName.includes('技术') ||
+                            d.dimensionName.includes('专业') ||
+                            d.dimensionName.includes('Technical')
+                        )
+                    );
+
+                    // 查找沟通表达维度
+                    const communicationDim = feedbackData.dimensions.find(d =>
+                        d.dimensionName && (
+                            d.dimensionName.includes('沟通') ||
+                            d.dimensionName.includes('表达') ||
+                            d.dimensionName.includes('Communication')
+                        )
+                    );
+
+                    if (technicalDim) {
+                        technicalFeedbackText = `${technicalDim.dimensionName}: ${technicalDim.evaluation || "暂无评价"} (评分: ${technicalDim.score})`;
                     }
 
-                    // 设置技术反馈和沟通反馈
-                    if (technicalFeedback) technicalFeedback.textContent = feedbackData.skillDimensions.technicalDepth || '';
-                    if (communicationFeedback) communicationFeedback.textContent = feedbackData.skillDimensions.communication || '';
+                    if (communicationDim) {
+                        communicationFeedbackText = `${communicationDim.dimensionName}: ${communicationDim.evaluation || "暂无评价"} (评分: ${communicationDim.score})`;
+                    }
 
-                    // 设置分数
-                    const score = parseFloat(feedbackData.overallScore.split('/')[0]);
-                    if (scoreValue) scoreValue.textContent = feedbackData.overallScore;
-                    if (scoreProgress) {
-                        scoreProgress.style.width = `${score * 10}%`;
-                        scoreProgress.style.transition = 'width 1s ease';
-                        // 根据分数设置进度条颜色
-                        if (score > 7) {
-                            scoreProgress.style.backgroundColor = '#10b981'; // 绿色
-                        } else if (score > 5) {
-                            scoreProgress.style.backgroundColor = '#f59e0b'; // 橙色
-                        } else {
-                            scoreProgress.style.backgroundColor = '#ef4444'; // 红色
+                    // 准备雷达图数据（按固定顺序）
+                    const radarLabels = ['专业知识', '问题解决', '沟通表达', '技术深度', '逻辑思维'];
+                    const radarData = radarLabels.map(label => {
+                        const dim = feedbackData.dimensions.find(d =>
+                            d.dimensionName && d.dimensionName.includes(label.substring(0, 2))
+                        );
+                        // 如果有评分，转换为数字（假设评分是 0-10 或类似格式）
+                        if (dim && dim.score) {
+                            const scoreStr = dim.score.toString();
+                            const match = scoreStr.match(/[\d.]+/);
+                            return match ? parseFloat(match[0]) : 6;
                         }
-                    }
-
-                    // 准备雷达图数据（顺序固定）
-                    const radarData = [
-                        feedbackData.skillDimensions.professionalKnowledge ? 7.5 : 6,
-                        feedbackData.skillDimensions.problemSolving ? 8 : 7,
-                        feedbackData.skillDimensions.communication ? 7 : 6.5,
-                        feedbackData.skillDimensions.technicalDepth ? 8.5 : 7,
-                        feedbackData.skillDimensions.logicalThinking ? 7.2 : 6.8
-                    ];
+                        return 6; // 默认值
+                    });
 
                     // 渲染技能雷达图
                     renderRadarChart(radarData);
+                }
 
-                    // 切换到反馈页面
-                    if (interviewPage) interviewPage.classList.add('hidden');
-                    if (feedbackPage) feedbackPage.classList.remove('hidden');
+                // 设置技术反馈和沟通反馈
+                if (technicalFeedback) {
+                    technicalFeedback.textContent = technicalFeedbackText || "技术维度暂无详细评价";
+                }
+                if (communicationFeedback) {
+                    communicationFeedback.textContent = communicationFeedbackText || "沟通维度暂无详细评价";
+                }
 
-                } catch (error) {
-                    console.error('生成反馈失败:', error);
-                    alert('生成反馈失败: ' + error.message);
-                    if (submitAnswerBtn) {
-                        submitAnswerBtn.disabled = false;
-                        submitAnswerBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交回答';
+                // 设置分数
+                const scoreMatch = feedbackData.overallScore.match(/[\d.]+/);
+                const score = scoreMatch ? parseFloat(scoreMatch[0]) : 0;
+
+                if (scoreValue) {
+                    scoreValue.textContent = feedbackData.overallScore || "0/10";
+                }
+
+                if (scoreProgress) {
+                    const percentage = Math.min(100, (score / 10) * 100);
+                    scoreProgress.style.width = `${percentage}%`;
+                    scoreProgress.style.transition = 'width 1s ease';
+
+                    // 根据分数设置进度条颜色
+                    if (score > 7) {
+                        scoreProgress.style.backgroundColor = '#10b981'; // 绿色
+                    } else if (score > 5) {
+                        scoreProgress.style.backgroundColor = '#f59e0b'; // 橙色
+                    } else {
+                        scoreProgress.style.backgroundColor = '#ef4444'; // 红色
                     }
                 }
-            }, 1500); // 1.5秒延迟模拟API请求
+
+                // 切换到反馈页面
+                if (interviewPage) interviewPage.classList.add('hidden');
+                if (feedbackPage) feedbackPage.classList.remove('hidden');
+
+                console.log("反馈生成成功");
+
+            } catch (error) {
+                console.error('生成反馈失败:', error);
+
+                // 显示错误信息，但仍然切换到反馈页面显示基本信息
+                alert('生成反馈时出错: ' + error.message + '，将显示基础信息');
+
+                // 即使出错也显示基础信息
+                if (feedbackQuestion) feedbackQuestion.textContent = question;
+                if (userAnswer) userAnswer.textContent = answer;
+                if (overallFeedback) overallFeedback.textContent = "反馈生成过程中出现错误，请稍后重试";
+                if (scoreValue) scoreValue.textContent = "0/10";
+                if (scoreProgress) scoreProgress.style.width = "0%";
+
+                // 切换到反馈页面
+                if (interviewPage) interviewPage.classList.add('hidden');
+                if (feedbackPage) feedbackPage.classList.remove('hidden');
+
+            } finally {
+                // 恢复按钮状态
+                if (submitAnswerBtn) {
+                    submitAnswerBtn.disabled = false;
+                    submitAnswerBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交回答';
+                }
+            }
         });
     }
 
