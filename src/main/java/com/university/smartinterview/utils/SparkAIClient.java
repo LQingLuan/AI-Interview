@@ -2,6 +2,7 @@
 package com.university.smartinterview.utils;
 
 import com.university.smartinterview.config.IflytekConfig;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -20,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * 讯飞星火API客户端封装 (使用WebSocket协议)
  */
+@Slf4j
 @Component
 public class SparkAIClient {
 
@@ -111,7 +113,6 @@ public class SparkAIClient {
                 .readTimeout(RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .build();
 
-        // 直接使用字符串URL创建Request
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -119,47 +120,44 @@ public class SparkAIClient {
         WebSocket webSocket = client.newWebSocket(request, new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
-                System.out.println("WebSocket connection opened");
-                // 连接成功后发送请求
+                log.info("WebSocket connection opened");
+                log.debug("Sending request: {}", requestBody);
                 webSocket.send(requestBody);
             }
 
             @Override
             public void onMessage(WebSocket webSocket, String text) {
                 try {
-                    System.out.println("Received message: " + text);
-                    JSONObject responseJson = new JSONObject(text);
+                    log.debug("Raw response: {}", text);
+
+                    JSONObject json = new JSONObject(text);
 
                     // 检查错误
-                    if (responseJson.has("header")) {
-                        JSONObject header = responseJson.getJSONObject("header");
-                        if (header.getInt("code") != 0) {
-                            throw new RuntimeException("API error: " + header.getString("message"));
+                    if (json.has("header")) {
+                        JSONObject header = json.getJSONObject("header");
+                        int code = header.optInt("code", 0);
+                        if (code != 0) {
+                            String msg = header.optString("message", "未知错误");
+                            throw new RuntimeException("API错误: " + msg);
                         }
                     }
 
-                    // 提取有效负载
-                    if (responseJson.has("payload")) {
-                        JSONObject payload = responseJson.getJSONObject("payload");
-                        if (payload.has("choices")) {
-                            JSONObject choices = payload.getJSONObject("choices");
-                            JSONArray textArray = choices.getJSONArray("text");
-
-                            for (int i = 0; i < textArray.length(); i++) {
-                                JSONObject textObj = textArray.getJSONObject(i);
-                                String content = textObj.getString("content");
-                                fullResponse.append(content);
-                            }
-
-                            // 检查是否结束
-                            if (choices.has("status") && choices.getInt("status") == 2) {
-                                System.out.println("Received final response");
-                                webSocket.close(1000, "Normal closure");
-                                latch.countDown();
-                            }
-                        }
+                    // 提取内容
+                    String content = extractContent(json);
+                    if (content != null && !content.isEmpty()) {
+                        fullResponse.append(content);
+                        log.debug("已提取内容: {} 字符", content.length());
                     }
+
+                    // 检查是否结束
+                    if (isFinalMessage(json)) {
+                        log.info("收到最终响应，总长度: {}", fullResponse.length());
+                        webSocket.close(1000, "正常关闭");
+                        latch.countDown();
+                    }
+
                 } catch (Exception e) {
+                    log.error("处理消息失败: {}", e.getMessage(), e);
                     error[0] = e;
                     latch.countDown();
                 }
@@ -167,29 +165,93 @@ public class SparkAIClient {
 
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
-                System.out.println("WebSocket connection closed: " + code + " - " + reason);
-                latch.countDown();
+                log.info("WebSocket连接关闭: {} - {}", code, reason);
+                if (latch.getCount() > 0) {
+                    latch.countDown();
+                }
             }
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                System.err.println("WebSocket error: " + t.getMessage());
-                error[0] = new RuntimeException("WebSocket failure", t);
+                log.error("WebSocket错误: {}", t.getMessage(), t);
+                error[0] = new RuntimeException("WebSocket连接失败", t);
                 latch.countDown();
             }
         });
 
-        // 等待响应完成或超时
+        // 等待响应
         boolean completed = latch.await(RESPONSE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         if (!completed) {
-            throw new RuntimeException("API call timed out after " + RESPONSE_TIMEOUT_SECONDS + " seconds");
+            throw new RuntimeException("API调用超时");
         }
 
         if (error[0] != null) {
             throw error[0];
         }
 
-        return fullResponse.toString();
+        String result = fullResponse.toString();
+        log.info("API调用成功，返回结果长度: {}", result.length());
+        return result;
+    }
+
+    private String extractContent(JSONObject json) {
+        try {
+            // 方法1: 标准讯飞格式
+            if (json.has("payload")) {
+                JSONObject payload = json.getJSONObject("payload");
+                if (payload.has("choices")) {
+                    JSONObject choices = payload.getJSONObject("choices");
+                    if (choices.has("text")) {
+                        JSONArray textArray = choices.getJSONArray("text");
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < textArray.length(); i++) {
+                            JSONObject textObj = textArray.getJSONObject(i);
+                            if (textObj.has("content")) {
+                                sb.append(textObj.getString("content"));
+                            } else if (textObj.has("text")) {
+                                sb.append(textObj.getString("text"));
+                            }
+                        }
+                        return sb.toString();
+                    }
+                }
+            }
+
+            // 方法2: 直接字段
+            String[] fields = {"content", "text", "result", "message", "data"};
+            for (String field : fields) {
+                if (json.has(field)) {
+                    return json.getString(field);
+                }
+            }
+
+            // 方法3: 如果以上都没有，返回整个JSON（调试用）
+            log.warn("未找到标准内容字段，JSON: {}", json.toString());
+            return json.toString();
+
+        } catch (Exception e) {
+            log.warn("提取内容失败: {}", e.getMessage());
+            return null;
+        }
+    }
+
+    private boolean isFinalMessage(JSONObject json) {
+        try {
+            if (json.has("payload")) {
+                JSONObject payload = json.getJSONObject("payload");
+                if (payload.has("choices")) {
+                    JSONObject choices = payload.getJSONObject("choices");
+                    return choices.optInt("status", 0) == 2;
+                }
+            }
+            if (json.has("header")) {
+                JSONObject header = json.getJSONObject("header");
+                return header.optInt("status", 0) == 2;
+            }
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private String generateAuthUrl(IflytekConfig.SparkAIConfig config) throws Exception {

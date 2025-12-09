@@ -19,15 +19,8 @@ public class InterviewStartReq {
         return careerDirection;
     }
 
-    public void setCareerDirection(String careerDirection) {
-        this.careerDirection = careerDirection;
-    }
-
     public Integer getDifficultyLevel() {
         return difficultyLevel;
     }
 
-    public void setDifficultyLevel(Integer difficultyLevel) {
-        this.difficultyLevel = difficultyLevel;
-    }
 }

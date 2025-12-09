@@ -10,6 +10,7 @@ public class InterviewQuestionRes {
 
     private String interviewId;  // 新增：数据库ID
     private String questionText;
+    private String referenceAnswer;
     private String sessionId;    // 保持向后兼容，与interviewId相同
     // Getters and Setters
     @Getter
@@ -54,6 +55,8 @@ public class InterviewQuestionRes {
     public void setQuestionText(String questionText) {
         this.questionText = questionText;
     }
+
+    public void setReferenceAnswer(String referenceAnswer) {this.referenceAnswer = referenceAnswer;}
 
     public String getCategory() {
         return category;

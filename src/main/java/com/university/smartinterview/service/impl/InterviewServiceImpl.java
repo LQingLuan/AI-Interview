@@ -77,7 +77,9 @@ public class InterviewServiceImpl implements InterviewService {
         String aiResponse = sparkAIClient.callSparkAI(prompt, "", sparkAIConfig);
 
         // 解析AI返回的问题（可能包含JSON或纯文本）
-        String questionText = extractQuestionFromAIResponse(aiResponse);
+        Map<String, String> extractedData = extractQuestionAndAnswerFromAIResponse(aiResponse);
+        String questionText = extractedData.get("question");
+        String referenceAnswer = extractedData.get("answer");
 
         // 保存到数据库
         InterviewRecord record = new InterviewRecord();
@@ -85,6 +87,7 @@ public class InterviewServiceImpl implements InterviewService {
         record.setCareerDirection(careerDirection);
         record.setDifficultyLevel(difficultyLevel);
         record.setQuestionText(questionText);
+        record.setReferenceAnswer(referenceAnswer);
         record.setStatus(InterviewRecord.InterviewStatus.PENDING);
 
         interviewRecordRepository.save(record);
@@ -94,6 +97,7 @@ public class InterviewServiceImpl implements InterviewService {
         InterviewQuestionRes questionRes = new InterviewQuestionRes();
         questionRes.setInterviewId(interviewId);
         questionRes.setQuestionText(questionText);
+        questionRes.setReferenceAnswer(referenceAnswer);
         questionRes.setSessionId(interviewId); // 保持向后兼容
         return questionRes;
 
@@ -107,6 +111,9 @@ public class InterviewServiceImpl implements InterviewService {
         InterviewRecord record = interviewRecordRepository.findByInterviewId(interviewId)
                 .orElseThrow(() -> new RuntimeException("未找到面试记录: " + interviewId));
 
+        log.info("数据库中已有的参考答案: {}",
+                record.getReferenceAnswer() != null ? record.getReferenceAnswer().substring(0, Math.min(100, record.getReferenceAnswer().length())) : "无");
+
         // 2. 更新回答内容
         record.setAnswerText(answerText);
         record.setStatus(InterviewRecord.InterviewStatus.ANSWERED);
@@ -117,20 +124,30 @@ public class InterviewServiceImpl implements InterviewService {
                 "你是一个资深面试官，请根据以下面试问题和候选人的回答，提供结构化的反馈：\n" +
                         "面试问题：%s\n" +
                         "候选人回答：%s\n\n" +
+                        "请严格按照以下要求生成反馈：\n" +
+                        "1. 综合评分：根据回答质量给出0-10分的分数\n" +
+                        "2. 总体评价：简要总结候选人的表现\n" +
+                        "3. 各维度评价：针对每个维度，根据候选人的具体回答给出评分和详细评价\n" +
+                        "4. 改进建议：提供2-3条具体的改进建议\n\n" +
                         "请以JSON格式输出，并且只输出JSON，不要有任何其他文本。\n" +
                         "JSON格式如下：\n" +
                         "{\n" +
-                        "  \"overallScore\": \"综合评分，例如8.5/10\",\n" +
-                        "  \"overallFeedback\": \"总体评价\",\n" +
+                        "  \"overallScore\": \"8.6\",\n" +
+                        "  \"overallFeedback\": \"候选人的回答...\",\n" +
                         "  \"dimensions\": [\n" +
-                        "    {\"dimensionName\": \"专业知识\", \"score\": \"8/10\", \"evaluation\": \"评价内容\"},\n" +
-                        "    {\"dimensionName\": \"问题解决\", \"score\": \"7/10\", \"evaluation\": \"评价内容\"},\n" +
-                        "    {\"dimensionName\": \"沟通表达\", \"score\": \"8/10\", \"evaluation\": \"评价内容\"},\n" +
-                        "    {\"dimensionName\": \"技术深度\", \"score\": \"7/10\", \"evaluation\": \"评价内容\"},\n" +
-                        "    {\"dimensionName\": \"逻辑思维\", \"score\": \"8/10\", \"evaluation\": \"评价内容\"}\n" +
+                        "    {\"dimensionName\": \"专业知识\", \"score\": \"8.0\", \"evaluation\": \"根据候选人对...的理解，具体评价...\"},\n" +
+                        "    {\"dimensionName\": \"问题解决\", \"score\": \"7.5\", \"evaluation\": \"候选人在解决问题方面...\"},\n" +
+                        "    {\"dimensionName\": \"沟通表达\", \"score\": \"8.4\", \"evaluation\": \"候选人的表达清晰...\"},\n" +
+                        "    {\"dimensionName\": \"技术深度\", \"score\": \"7.2\", \"evaluation\": \"对技术细节的掌握...\"},\n" +
+                        "    {\"dimensionName\": \"逻辑思维\", \"score\": \"8.8\", \"evaluation\": \"思维逻辑...\"}\n" +
                         "  ],\n" +
                         "  \"improvementSuggestions\": [\"建议1\", \"建议2\", \"建议3\"]\n" +
-                        "}",
+                        "}\n" +
+                        "重要提示：\n" +
+                        "1. 必须根据候选人的实际回答内容生成具体的评价，不能使用通用模板\n" +
+                        "2. 如果回答不相关或太简短，评分不能超过3分\n" +
+                        "3. 评价内容要具体，指出回答中的优点和不足\n" +
+                        "4. 改进建议要针对回答中的具体问题提出",
                 record.getQuestionText(), answerText
         );
 
@@ -142,6 +159,11 @@ public class InterviewServiceImpl implements InterviewService {
             // 5. 解析并保存反馈数据
             FeedbackRes feedbackRes = parseAndSaveFeedback(record, jsonResponse);
             log.info("反馈生成成功，interviewId: {}, 综合评分: {}", interviewId, feedbackRes.getOverallScore());
+
+            // 确保参考答案被包含在返回结果中
+            if ( record.getReferenceAnswer() != null) {
+                feedbackRes.setReferenceAnswer(record.getReferenceAnswer());
+            }
 
             return feedbackRes;
         } catch (Exception e) {
@@ -184,13 +206,24 @@ public class InterviewServiceImpl implements InterviewService {
                 JSONArray dimensionsArray = json.getJSONArray("dimensions");
                 List<FeedbackDimension> dimensions = new ArrayList<>();
 
+                // 定义标准的维度名称映射
+                String[] standardDimensionNames = {"专业知识", "问题解决", "沟通表达", "技术深度", "逻辑思维"};
+
                 for (int i = 0; i < dimensionsArray.length(); i++) {
                     JSONObject dimJson = dimensionsArray.getJSONObject(i);
 
                     FeedbackDimension dimension = new FeedbackDimension();
                     dimension.setInterviewRecord(record);
                     dimension.setInterviewId(record.getInterviewId());
-                    dimension.setDimensionName(dimJson.optString("name", "维度" + (i + 1)));
+
+                    // 使用标准维度名称，如果索引超出范围则使用AI返回的名称
+                    String dimName;
+                    if (i < standardDimensionNames.length) {
+                        dimName = standardDimensionNames[i];
+                    } else {
+                        dimName = dimJson.optString("name", dimJson.optString("dimensionName", "维度" + (i + 1)));
+                    }
+                    dimension.setDimensionName(dimName);
                     dimension.setOrderNum(i);  // 设置显示顺序
 
                     Object scoreObj = dimJson.opt("score");
@@ -217,11 +250,12 @@ public class InterviewServiceImpl implements InterviewService {
                     dimension.setEvaluation(dimJson.optString("evaluation", "暂无评价"));
 
                     // 设置权重（根据维度名称设置不同的权重）
-                    String dimName = dimension.getDimensionName();
                     if (dimName.contains("技术") || dimName.contains("专业")) {
                         dimension.setWeight(new BigDecimal("1.20"));
                     } else if (dimName.contains("沟通") || dimName.contains("表达")) {
                         dimension.setWeight(new BigDecimal("1.00"));
+                    } else if (dimName.contains("问题解决") || dimName.contains("逻辑")) {
+                        dimension.setWeight(new BigDecimal("1.10"));
                     } else {
                         dimension.setWeight(new BigDecimal("1.00"));
                     }
@@ -236,7 +270,7 @@ public class InterviewServiceImpl implements InterviewService {
             FeedbackRes feedbackRes = new FeedbackRes();
             feedbackRes.setOverallScore(record.getOverallScore());
             feedbackRes.setOverallFeedback(record.getOverallFeedback());
-
+            feedbackRes.setReferenceAnswer(record.getReferenceAnswer());
             // 设置维度评价
             List<FeedbackDimension> savedDimensions = feedbackDimensionRepository.findByInterviewId(record.getInterviewId());
             List<FeedbackRes.DimensionEvaluation> dimensionEvaluations = new ArrayList<>();
@@ -259,6 +293,8 @@ public class InterviewServiceImpl implements InterviewService {
                 }
                 feedbackRes.setImprovementSuggestions(suggestions);
             }
+
+
 
             return feedbackRes;
 
@@ -292,24 +328,152 @@ public class InterviewServiceImpl implements InterviewService {
         }
     }
 
-    private String extractQuestionFromAIResponse(String aiResponse) {
+    private Map<String, String> extractQuestionAndAnswerFromAIResponse(String aiResponse) {
+        Map<String, String> result = new HashMap<>();
+
         try {
-            // 尝试解析JSON
+            log.debug("AI原始响应: {}", aiResponse);
+
+            // 情况1：尝试解析JSON
+            // 清理可能的Markdown标记和多余字符
             String cleanedResponse = aiResponse
                     .replace("```json", "")
                     .replace("```", "")
                     .trim();
 
+            log.debug("清理后响应: {}", cleanedResponse);
+
+            // 尝试解析JSON
             JSONObject json = new JSONObject(cleanedResponse);
+
+            // 提取question
             if (json.has("question")) {
-                return json.getString("question");
+                String question = json.getString("question");
+                result.put("question", question);
+                log.info("成功提取问题: {}", question.substring(0, Math.min(100, question.length())));
             }
+
+            // 提取answer（确保只提取answer字段）
+            if (json.has("answer")) {
+                String answer = json.getString("answer");
+
+                // 清理可能的额外字符和格式
+                answer = cleanAnswerText(answer);
+                result.put("answer", answer);
+                log.info("成功提取答案: {}", answer.substring(0, Math.min(100, answer.length())));
+            }
+
+            // 如果成功提取了question和answer，直接返回
+            if (result.containsKey("question") && result.containsKey("answer")) {
+                return result;
+            }
+
+            // 情况2：如果不是标准JSON，尝试手动提取
+            log.warn("AI响应不是标准JSON，尝试其他方式提取");
+
         } catch (Exception e) {
-            log.debug("AI响应不是标准JSON，使用原始文本");
+            log.warn("JSON解析失败，尝试其他方式提取: {}", e.getMessage());
         }
 
-        // 如果不是JSON，返回原始文本（限制长度）
-        return aiResponse.length() > 1000 ? aiResponse.substring(0, 1000) + "..." : aiResponse;
+        // 情况3：尝试正则表达式提取
+        try {
+            // 清理响应文本
+            String cleanText = aiResponse
+                    .replace("```json", "")
+                    .replace("```", "")
+                    .trim();
+
+            // 提取question：尝试匹配 "question": "内容" 格式
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\"question\":\\s*\"([^\"]+)\"");
+            java.util.regex.Matcher matcher = pattern.matcher(cleanText);
+            if (matcher.find()) {
+                String question = matcher.group(1);
+                result.put("question", question);
+                log.info("正则提取问题: {}", question.substring(0, Math.min(100, question.length())));
+            }
+
+            // 提取question：尝试匹配 'question': '内容' 格式
+            pattern = java.util.regex.Pattern.compile("'question':\\s*'([^']+)'");
+            matcher = pattern.matcher(cleanText);
+            if (matcher.find() && !result.containsKey("question")) {
+                String question = matcher.group(1);
+                result.put("question", question);
+                log.info("正则提取问题（单引号）: {}", question.substring(0, Math.min(100, question.length())));
+            }
+
+            // 提取answer：尝试匹配 "answer": "内容" 格式
+            pattern = java.util.regex.Pattern.compile("\"answer\":\\s*\"([^\"]+)\"");
+            matcher = pattern.matcher(cleanText);
+            if (matcher.find()) {
+                String answer = matcher.group(1);
+                // 清理可能的额外字符和格式
+                answer = cleanAnswerText(answer);
+                result.put("answer", answer);
+                log.info("正则提取答案: {}", answer.substring(0, Math.min(100, answer.length())));
+            }
+
+            // 提取answer：尝试匹配 'answer': '内容' 格式
+            pattern = java.util.regex.Pattern.compile("'answer':\\s*'([^']+)'");
+            matcher = pattern.matcher(cleanText);
+            if (matcher.find() && !result.containsKey("answer")) {
+                String answer = matcher.group(1);
+                // 清理可能的额外字符和格式
+                answer = cleanAnswerText(answer);
+                result.put("answer", answer);
+                log.info("正则提取答案（单引号）: {}", answer.substring(0, Math.min(100, answer.length())));
+            }
+
+        } catch (Exception e) {
+            log.warn("正则提取失败: {}", e.getMessage());
+        }
+
+        // 情况4：如果以上都失败，检查是否响应本身就是纯问题文本
+        // 检查是否包含常见的JSON结构特征
+        if (!aiResponse.contains("\"question\"") &&
+                !aiResponse.contains("{") &&
+                !aiResponse.contains("}")) {
+            log.info("响应似乎是纯问题文本");
+            result.put("question", aiResponse);
+        }
+
+        // 最终回退：如果没有提取到question，返回原始响应（截断）
+        if (!result.containsKey("question")) {
+            log.warn("无法提取问题，返回原始响应（截断）");
+            String fallback = aiResponse.length() > 1000 ? aiResponse.substring(0, 1000) + "..." : aiResponse;
+            result.put("question", fallback);
+        }
+
+        // 如果没有提取到answer，设置为空字符串
+        if (!result.containsKey("answer")) {
+            result.put("answer", "");
+        }
+
+        return result;
+    }
+
+    /**
+     * 清理答案文本，移除可能的额外格式和标记
+     */
+    private String cleanAnswerText(String answer) {
+        if (answer == null || answer.isEmpty()) {
+            return "";
+        }
+
+        // 移除可能的Markdown代码块标记
+        String cleaned = answer
+                .replace("```python", "")
+                .replace("```java", "")
+                .replace("```javascript", "")
+                .replace("```", "")
+                .trim();
+
+        // 移除可能的JSON转义字符
+        cleaned = cleaned
+                .replace("\\\"", "\"")
+                .replace("\\n", "\n")
+                .replace("\\t", "\t");
+
+        return cleaned;
     }
 
     @Override

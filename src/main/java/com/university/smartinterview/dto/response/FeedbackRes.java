@@ -9,7 +9,7 @@ public class FeedbackRes {
     private String overallFeedback; // 总体反馈
     private List<DimensionEvaluation> dimensions; // 各维度评价
     private List<String> improvementSuggestions; // 改进建议
-    private String sampleAnswer; // 示例回答
+    private String referenceAnswer; // 示例回答
 
     // 维度评价内部类
     public static class DimensionEvaluation {
@@ -87,11 +87,11 @@ public class FeedbackRes {
         this.improvementSuggestions = improvementSuggestions;
     }
 
-    public String getSampleAnswer() {
-        return sampleAnswer;
+    public String getReferenceAnswer() {
+        return referenceAnswer;
     }
 
-    public void setSampleAnswer(String sampleAnswer) {
-        this.sampleAnswer = sampleAnswer;
+    public void setReferenceAnswer(String referenceAnswer) {
+        this.referenceAnswer = referenceAnswer;
     }
 }

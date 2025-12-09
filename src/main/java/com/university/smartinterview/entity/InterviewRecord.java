@@ -40,6 +40,10 @@ public class InterviewRecord {
     private String questionText;
 
     @Lob
+    @Column(name = "reference_answer", nullable = false, columnDefinition = "TEXT")
+    private String referenceAnswer;
+
+    @Lob
     @Column(name = "answer_text", columnDefinition = "TEXT")
     private String answerText;
 

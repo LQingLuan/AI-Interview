@@ -36,13 +36,11 @@ public class FeedbackDimension {
     @Column(name = "evaluation", columnDefinition = "TEXT")
     private String evaluation;
 
-    // ============ 修改这里 ============
     @Column(name = "weight", precision = 3, scale = 2)
     private BigDecimal weight = new BigDecimal("1.00");  // 使用字符串构造函数避免精度问题
 
     @Column(name = "order_num")
     private Integer orderNum = 0;
-    // =================================
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
