@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能面试系统 - 用户登录</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/user.css">
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-user-tie"></i>
+            </div>
+            <div class="logo-text">智能面试系统</div>
+        </div>
+        <p class="tagline">专业、高效、智能的在线面试平台，助力招聘与人才选拔</p>
+    </div>
+
+    <div class="main-content">
+        <div class="form-container">
+            <div class="tabs">
+                <div class="tab active" id="login-tab">登录</div>
+                <div class="tab" id="register-tab">注册</div>
+            </div>
+
+            <!-- 登录表单 -->
+            <form class="form active" id="login-form">
+                <h2 class="form-title">欢迎回来</h2>
+
+                <div class="message" id="login-message"></div>
+
+                <div class="form-group">
+                    <label class="form-label" for="login-username">用户名</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="login-username" class="form-control" placeholder="请输入用户名" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="login-password">密码</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                </div>
+
+                <div class="form-check">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">记住我</label>
+                    </div>
+                    <a href="#" class="forgot-password">忘记密码？</a>
+                </div>
+
+                <button type="submit" class="btn" id="login-btn">
+                    <span id="login-btn-text">登录</span>
+                </button>
+
+                <div class="form-footer">
+                    还没有账户？ <a href="#" id="switch-to-register">立即注册</a>
+                </div>
+            </form>
+
+            <!-- 注册表单 -->
+            <form class="form" id="register-form">
+                <h2 class="form-title">创建新账户</h2>
+
+                <div class="message" id="register-message"></div>
+
+                <div class="form-group">
+                    <label class="form-label" for="register-username">用户名</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="register-username" class="form-control" placeholder="请输入用户名" required>
+                    </div>
+                    <div class="availability-check">
+                        <button type="button" id="check-username-btn">检查用户名可用性</button>
+                    </div>
+                    <div class="availability-result" id="username-result"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="register-password">密码</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="register-password" class="form-control" placeholder="请输入密码" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="register-email">邮箱地址 (可选)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="register-email" class="form-control" placeholder="请输入邮箱地址">
+                    </div>
+                    <div class="availability-check">
+                        <button type="button" id="check-email-btn">检查邮箱可用性</button>
+                    </div>
+                    <div class="availability-result" id="email-result"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="register-phone">手机号码 (可选)</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="register-phone" class="form-control" placeholder="请输入手机号码">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn" id="register-btn">
+                    <span id="register-btn-text">注册</span>
+                </button>
+
+                <div class="form-footer">
+                    已有账户？ <a href="#" id="switch-to-login">立即登录</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="welcome-container">
+            <h2 class="welcome-title">加入智能面试系统</h2>
+            <p class="welcome-text">
+                我们提供专业的在线面试解决方案，帮助企业高效筛选人才，为求职者提供公平的展示平台。
+            </p>
+            <ul class="features">
+                <li><i class="fas fa-check-circle"></i> 智能面试评估系统</li>
+                <li><i class="fas fa-check-circle"></i> 实时面试录制与回放</li>
+                <li><i class="fas fa-check-circle"></i> 多维度候选人评估</li>
+                <li><i class="fas fa-check-circle"></i> 安全可靠的数据保护</li>
+                <li><i class="fas fa-check-circle"></i> 专业团队技术支持</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 用户信息面板 -->
+    <div class="user-info-panel" id="user-info-panel">
+        <div class="user-header">
+            <div style="display: flex; align-items: center;">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="user-name">用户名</div>
+                    <div class="user-id" id="user-id">用户ID</div>
+                    <span class="user-type" id="user-type">普通用户</span>
+                </div>
+            </div>
+            <button class="logout-btn" id="logout-btn">退出登录</button>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">邮箱地址</div>
+                <div class="info-value" id="info-email">未设置</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">手机号码</div>
+                <div class="info-value" id="info-phone">未设置</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">账户状态</div>
+                <div class="info-value" id="info-status">活跃</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">上次登录时间</div>
+                <div class="info-value" id="info-last-login">从未登录</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">注册时间</div>
+                <div class="info-value" id="info-created-at">未知</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">登录IP</div>
+                <div class="info-value" id="info-last-ip">未知</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2023 智能面试系统. 版权所有.</p>
+        <p>技术支持: university.smartinterview@example.com | 服务热线: 400-123-4567</p>
+    </div>
+</div>
+
+<script src = "js/user.js"></script>
+</body>
+</html>

@@ -17,10 +17,6 @@ public interface InterviewRecordRepository extends JpaRepository<InterviewRecord
 
     List<InterviewRecord> findByUserIdOrderByCreatedAtDesc(String userId);
 
-    List<InterviewRecord> findByStatus(InterviewRecord.InterviewStatus status);
-
-    List<InterviewRecord> findByCareerDirectionAndDifficultyLevel(String careerDirection, Integer difficultyLevel);
-
     @Query("SELECT ir FROM InterviewRecord ir WHERE ir.createdAt >= :startDate AND ir.createdAt <= :endDate")
     List<InterviewRecord> findBetweenDates(@Param("startDate") LocalDateTime startDate,
                                            @Param("endDate") LocalDateTime endDate);

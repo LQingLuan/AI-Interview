@@ -5,7 +5,6 @@ import com.university.smartinterview.dto.request.InterviewStartReq;
 import com.university.smartinterview.dto.response.FeedbackRes;
 import com.university.smartinterview.dto.response.InterviewQuestionRes;
 import com.university.smartinterview.dto.response.ResponseWrapper;
-import com.university.smartinterview.entity.InterviewRecord;
 import com.university.smartinterview.service.InterviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
