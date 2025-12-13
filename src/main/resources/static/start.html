@@ -3,254 +3,541 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能面试</title>
+    <title>智能面试系统</title>
+    <link rel="stylesheet" href="css/start.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="css/start.css">
 </head>
 <body>
-<div class="container">
-    <header>
-        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+<div class="app-container">
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
             <div class="logo">
-                <i class="fas fa-microphone-alt logo-icon"></i>
-                <h1>AI智能面试系统</h1>
-            </div>
-            <div id="user-info-header" style="display: flex; align-items: center; gap: 15px;">
-                <span id="current-username">未登录</span>
-                <button id="logout-header-btn" class="btn" style="padding: 8px 16px; font-size: 14px;">
-                    <i class="fas fa-sign-out-alt"></i> 退出登录
-                </button>
-            </div>
-        </div>
-        <p class="subtitle">基于讯飞星火AI技术，提供智能化面试体验，实时分析您的回答并生成专业反馈</p>
-    </header>
-
-    <!-- AI面试官头像 -->
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712139.png" alt="AI面试官" class="ai-avatar">
-
-    <div class="page-container">
-        <!-- 面试页面 -->
-        <div class="card" id="interviewPage">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="fas fa-comments"></i>
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
                 </div>
-                <h2 class="card-title">青栾智能面试</h2>
-            </div>
-
-            <div class="form-group">
-                <label for="careerDirection"><i class="fas fa-briefcase"></i> 输入您的职业方向</label>
-                <input type="text" id="careerDirection" name="careerDirection"
-                       placeholder="输入您的职业方向" autocomplete="off">
-            </div>
-
-            <div class="form-group">
-                <label for="difficultyLevel"><i class="fas fa-chart-line"></i> 选择难度级别</label>
-                <select id="difficultyLevel">
-                    <option value="1">初级</option>
-                    <option value="2" selected>中级</option>
-                    <option value="3">高级</option>
-                </select>
-            </div>
-
-            <div class="btn-group">
-                <button id="startInterviewBtn" class="btn btn-primary">
-                    <i class="fas fa-play-circle"></i> 开始面试
-                </button>
-            </div>
-
-            <div id="questionSection" class="hidden">
-                <div class="question-container">
-                    <div class="question-title">
-                        <i class="fas fa-question-circle"></i> 面试问题
-                    </div>
-                    <div id="questionContent" class="question-content">
-                        问题加载中...
-                    </div>
+                <div class="logo-text">
+                    <h1>AI面试官</h1>
+                    <p>智能面试评估系统</p>
                 </div>
-
-                <div class="recorder-container">
-                    <h3><i class="fas fa-microphone"></i> 语音回答</h3>
-                    <p>请点击下方按钮开始录音回答此问题</p>
-
-                    <div class="recorder-visualizer" id="visualizer">
-                        <!-- 音频可视化条将通过JS动态生成 -->
-                    </div>
-
-                    <div class="recorder-controls">
-                        <button id="startRecordBtn" class="btn btn-success">
-                            <i class="fas fa-microphone"></i> 开始录音
-                        </button>
-                        <button id="pauseRecordBtn" class="btn btn-warning">
-                            <i class="fas fa-pause"></i> 暂停录音
-                        </button>
-                        <button id="stopRecordBtn" class="btn btn-danger" disabled>
-                            <i class="fas fa-stop"></i> 停止录音
-                        </button>
-                        <button id="submitAnswerBtn" class="btn btn-primary" disabled>
-                            <i class="fas fa-paper-plane"></i> 提交回答
-                        </button>
-                    </div>
-
-                    <div id="recordingIndicator" class="recording-indicator hidden">
-                        <div class="pulse"></div>
-                        <span>正在录音中...</span>
-                    </div>
-
-                    <div id="status" class="status">准备就绪</div>
-
-                    <div class="result-container">
-                        <div class="result-title">
-                            <i class="fas fa-headphones"></i> 语音识别结果
-                        </div>
-                        <div id="recognitionResult" class="result-content">
-                            您的回答将实时显示在这里...
-                        </div>
-                    </div>
+            </div>
+            <div class="user-info-sidebar">
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                    <h3 id="sidebarUsername">加载中...</h3>
+                    <p id="sidebarUserType">用户类型</p>
                 </div>
             </div>
         </div>
 
-        <!-- 反馈页面 -->
-        <div class="card hidden" id="feedbackPage">
-            <div class="card-header">
-                <div class="card-icon">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <h2 class="card-title">面试反馈分析</h2>
-            </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item active" data-page="startInterview">
+                    <a href="#">
+                        <i class="fas fa-play-circle"></i>
+                        <span>开始面试</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-page="userCenter">
+                    <a href="#">
+                        <i class="fas fa-user-circle"></i>
+                        <span>用户中心</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-page="interviewHistory">
+                    <a href="#">
+                        <i class="fas fa-history"></i>
+                        <span>面试历史</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-page="settings">
+                    <a href="#">
+                        <i class="fas fa-cog"></i>
+                        <span>系统设置</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
-            <div class="question-container">
-                <div class="question-title">
-                    <i class="fas fa-question-circle"></i> 面试问题回顾
-                </div>
-                <div id="feedbackQuestion" class="question-content">
-                    <!-- 问题内容将通过JS填充 -->
-                </div>
-            </div>
-
-            <div class="result-container">
-                <div class="result-title">
-                    <i class="fas fa-user"></i> 您的回答
-                </div>
-                <div id="userAnswer" class="result-content">
-                    <!-- 用户回答内容将通过JS填充 -->
-                </div>
-            </div>
-
-            <div class="progress-container">
-                <div class="progress-text">
-                    <span>综合评分</span>
-                    <span id="scoreValue">0/10</span>
-                </div>
-                <div class="progress-bar">
-                    <div id="scoreProgress" class="progress-fill"></div>
-                </div>
-            </div>
-
-            <div class="skill-chart">
-                <canvas id="skillRadarChart"></canvas>
-            </div>
-
-            <!-- 反馈网格布局 -->
-            <div class="feedback-grid">
-                <!-- 总体评价卡片 -->
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-star"></i> 总体评价
-                    </div>
-                    <div id="overallFeedback" class="feedback-card-content">
-                        <!-- 总体评价将通过JS填充 -->
-                    </div>
-                </div>
-
-                <!-- 改进建议卡片 -->
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-lightbulb"></i> 改进建议
-                    </div>
-                    <div id="improvementSuggestions" class="feedback-card-content">
-                        <!-- 改进建议将通过JS填充 -->
-                    </div>
-                </div>
-
-                <!-- 专业知识卡片 -->
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-graduation-cap"></i> 专业知识
-                    </div>
-                    <div id="knowledgeFeedback" class="feedback-card-content">
-                        <!-- 专业知识评价将通过JS填充 -->
-                    </div>
-                </div>
-
-                <!-- 技术深度卡片 -->
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-code"></i> 技术深度
-                    </div>
-                    <div id="technicalFeedback" class="feedback-card-content">
-                        <!-- 技术深度评价将通过JS填充 -->
-                    </div>
-                </div>
-
-                <!-- 问题解决卡片 -->
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-puzzle-piece"></i> 问题解决
-                    </div>
-                    <div id="problemSolvingFeedback" class="feedback-card-content">
-                        <!-- 问题解决评价将通过JS填充 -->
-                    </div>
-                </div>
-
-                <!-- 逻辑思维卡片 -->
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-brain"></i> 逻辑思维
-                    </div>
-                    <div id="logicalThinkingFeedback" class="feedback-card-content">
-                        <!-- 逻辑思维评价将通过JS填充 -->
-                    </div>
-                </div>
-
-                <!-- 沟通表达卡片 -->
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-comments"></i> 沟通表达
-                    </div>
-                    <div id="communicationFeedback" class="feedback-card-content">
-                        <!-- 沟通表达评价将通过JS填充 -->
-                    </div>
-                </div>
-
-                <div class="feedback-card">
-                    <div class="feedback-card-title">
-                        <i class="fas fa-check-circle"></i> 标准答案参考
-                    </div>
-                    <div id="standardAnswer" class="feedback-card-content">
-                        <!-- 标准答案将通过JS填充 -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="btn-group" style="margin-top: 30px;">
-                <button id="newInterviewBtn" class="btn btn-primary">
-                    <i class="fas fa-redo"></i> 开始新的面试
-                </button>
-                <button id="downloadReportBtn" class="btn btn-success">
-                    <i class="fas fa-download"></i> 下载报告
-                </button>
-            </div>
+        <div class="sidebar-footer">
+            <button class="btn btn-danger btn-block" onclick="logoutUser()">
+                <i class="fas fa-sign-out-alt"></i> 退出登录
+            </button>
         </div>
     </div>
 
-    <footer>
-        <p>智能面试系统 &copy; 2023 | 基于讯飞星火AI技术 | 版本 1.0.0</p>
-        <p>本系统使用AI技术生成面试问题并分析回答内容，结果仅供参考</p>
-    </footer>
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 页面头部 -->
+        <header class="main-header">
+            <div class="header-title">
+                <h2 id="pageTitle">开始面试</h2>
+                <p id="pageSubtitle">选择职业方向和难度，开始您的智能面试</p>
+            </div>
+            <div class="header-actions">
+                <div class="user-indicator">
+                    <span id="currentUsername">加载用户信息...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 页面内容容器 -->
+        <div class="page-content">
+            <!-- 开始面试页面（默认显示） -->
+            <div id="startInterviewPage" class="page active">
+                <!-- 原start.html的内容 -->
+                <div class="container">
+                    <div class="page-container">
+                        <!-- 职业选择卡片 -->
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-briefcase"></i>
+                                </div>
+                                <h2 class="card-title">选择面试方向</h2>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="careerDirection">
+                                    <i class="fas fa-map-marker-alt"></i> 职业方向
+                                </label>
+                                <input
+                                        list="careerDirections"
+                                        id="careerDirection"
+                                        class="form-control"
+                                        placeholder="请选择或输入职业方向"
+                                        autocomplete="off"
+                                />
+
+                                <!-- 预定义选项列表 -->
+                                <datalist id="careerDirections">
+                                    <option value="软件开发工程师">软件开发工程师</option>
+                                    <option value="前端开发工程师">前端开发工程师</option>
+                                    <option value="后端开发工程师">后端开发工程师</option>
+                                    <option value="数据科学家">数据科学家</option>
+                                    <option value="产品经理">产品经理</option>
+                                    <option value="UI/UX设计师">UI/UX设计师</option>
+                                    <option value="测试工程师">测试工程师</option>
+                                    <option value="运维工程师">运维工程师</option>
+                                    <option value="人工智能工程师">人工智能工程师</option>
+                                    <option value="网络安全工程师">网络安全工程师</option>
+                                </datalist>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="difficultyLevel">
+                                    <i class="fas fa-chart-line"></i> 难度级别
+                                </label>
+                                <select id="difficultyLevel" class="form-control">
+                                    <option value="1">初级 (1星)</option>
+                                    <option value="2" selected>中级 (2星)</option>
+                                    <option value="3">高级 (3星)</option>
+                                    <option value="4">专家 (4星)</option>
+                                    <option value="5">大师 (5星)</option>
+                                </select>
+                            </div>
+
+                            <button id="startInterviewBtn" class="btn btn-primary btn-block">
+                                <i class="fas fa-play-circle"></i> 开始面试
+                            </button>
+                        </div>
+
+                        <!-- 面试问题卡片 -->
+                        <div id="questionSection" class="card hidden">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <h2 class="card-title">面试问题</h2>
+                            </div>
+
+                            <div class="question-container">
+                                <div class="question-title">
+                                    <i class="fas fa-quote-left"></i> 问题内容
+                                </div>
+                                <div id="questionContent" class="question-content">
+                                    问题将在此显示...
+                                </div>
+                            </div>
+
+                            <!-- 语音识别部分 -->
+                            <div class="recorder-container">
+                                <h3>语音回答</h3>
+                                <p>点击下方按钮开始录音，系统会自动识别您的回答</p>
+
+                                <div id="visualizer" class="recorder-visualizer">
+                                    <!-- 可视化条会动态生成 -->
+                                </div>
+
+                                <div id="recordingIndicator" class="recording-indicator hidden">
+                                    <div class="pulse"></div>
+                                    <span>正在录音...</span>
+                                </div>
+
+                                <div id="timeRemaining" class="time-remaining"></div>
+
+                                <div class="recorder-controls">
+                                    <button id="startRecordBtn" class="btn btn-success">
+                                        <i class="fas fa-microphone"></i> 开始录音
+                                    </button>
+                                    <button id="pauseRecordBtn" class="btn btn-warning" disabled>
+                                        <i class="fas fa-pause"></i> 暂停录音
+                                    </button>
+                                    <button id="stopRecordBtn" class="btn btn-danger" disabled>
+                                        <i class="fas fa-stop"></i> 停止录音
+                                    </button>
+                                </div>
+
+                                <div class="status-indicator">
+                                    <p id="status">准备就绪</p>
+                                </div>
+                            </div>
+
+                            <!-- 识别结果 -->
+                            <div class="result-container">
+                                <div class="result-title">
+                                    <i class="fas fa-comment-dots"></i> 识别结果
+                                </div>
+                                <div id="recognitionResult" class="result-content">
+                                    您的回答将实时显示在这里...
+                                </div>
+                            </div>
+
+                            <!-- 提交按钮 -->
+                            <div class="btn-group">
+                                <button id="submitAnswerBtn" class="btn btn-primary" disabled>
+                                    <i class="fas fa-paper-plane"></i> 提交回答
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 反馈页面 -->
+                        <div class="card hidden" id="feedbackPage">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <h2 class="card-title">面试反馈分析</h2>
+                            </div>
+
+                            <div class="question-container">
+                                <div class="question-title">
+                                    <i class="fas fa-question-circle"></i> 面试问题回顾
+                                </div>
+                                <div id="feedbackQuestion" class="question-content">
+                                    <!-- 问题内容将通过JS填充 -->
+                                </div>
+                            </div>
+
+                            <div class="result-container">
+                                <div class="result-title">
+                                    <i class="fas fa-user"></i> 您的回答
+                                </div>
+                                <div id="userAnswer" class="result-content">
+                                    <!-- 用户回答内容将通过JS填充 -->
+                                </div>
+                            </div>
+
+                            <div class="progress-container">
+                                <div class="progress-text">
+                                    <span>综合评分</span>
+                                    <span id="scoreValue">0/10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div id="scoreProgress" class="progress-fill"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-chart">
+                                <canvas id="skillRadarChart"></canvas>
+                            </div>
+
+                            <!-- 反馈网格布局 -->
+                            <div class="feedback-grid">
+                                <!-- 总体评价卡片 -->
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-star"></i> 总体评价
+                                    </div>
+                                    <div id="overallFeedback" class="feedback-card-content">
+                                        <!-- 总体评价将通过JS填充 -->
+                                    </div>
+                                </div>
+
+                                <!-- 改进建议卡片 -->
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-lightbulb"></i> 改进建议
+                                    </div>
+                                    <div id="improvementSuggestions" class="feedback-card-content">
+                                        <!-- 改进建议将通过JS填充 -->
+                                    </div>
+                                </div>
+
+                                <!-- 专业知识卡片 -->
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-graduation-cap"></i> 专业知识
+                                    </div>
+                                    <div id="knowledgeFeedback" class="feedback-card-content">
+                                        <!-- 专业知识评价将通过JS填充 -->
+                                    </div>
+                                </div>
+
+                                <!-- 技术深度卡片 -->
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-code"></i> 技术深度
+                                    </div>
+                                    <div id="technicalFeedback" class="feedback-card-content">
+                                        <!-- 技术深度评价将通过JS填充 -->
+                                    </div>
+                                </div>
+
+                                <!-- 问题解决卡片 -->
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-puzzle-piece"></i> 问题解决
+                                    </div>
+                                    <div id="problemSolvingFeedback" class="feedback-card-content">
+                                        <!-- 问题解决评价将通过JS填充 -->
+                                    </div>
+                                </div>
+
+                                <!-- 逻辑思维卡片 -->
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-brain"></i> 逻辑思维
+                                    </div>
+                                    <div id="logicalThinkingFeedback" class="feedback-card-content">
+                                        <!-- 逻辑思维评价将通过JS填充 -->
+                                    </div>
+                                </div>
+
+                                <!-- 沟通表达卡片 -->
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-comments"></i> 沟通表达
+                                    </div>
+                                    <div id="communicationFeedback" class="feedback-card-content">
+                                        <!-- 沟通表达评价将通过JS填充 -->
+                                    </div>
+                                </div>
+
+                                <div class="feedback-card">
+                                    <div class="feedback-card-title">
+                                        <i class="fas fa-check-circle"></i> 标准答案参考
+                                    </div>
+                                    <div id="standardAnswer" class="feedback-card-content">
+                                        <!-- 标准答案将通过JS填充 -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button id="newInterviewBtn" class="btn btn-primary">
+                                    <i class="fas fa-redo"></i> 新的面试
+                                </button>
+                                <button id="downloadReportBtn" class="btn btn-success">
+                                    <i class="fas fa-download"></i> 下载报告
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户中心页面 -->
+            <div id="userCenterPage" class="page">
+                <div class="container">
+                    <div class="page-container">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <h2 class="card-title">用户中心</h2>
+                            </div>
+
+                            <!-- 用户信息面板 -->
+                            <div class="user-info-panel">
+                                <div class="user-header">
+                                    <div class="user-avatar-large">
+                                        <i class="fas fa-user-circle"></i>
+                                    </div>
+                                    <div class="user-details-large">
+                                        <h2 id="userName">用户名称</h2>
+                                        <p class="user-id">用户ID: <span id="userId">未登录</span></p>
+                                        <p class="user-type">用户类型: <span id="userType">普通用户</span></p>
+                                    </div>
+                                </div>
+
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-envelope"></i> 邮箱
+                                        </div>
+                                        <div id="userEmail" class="info-value">未设置</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-phone"></i> 手机
+                                        </div>
+                                        <div id="userPhone" class="info-value">未设置</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-calendar-alt"></i> 注册时间
+                                        </div>
+                                        <div id="registerTime" class="info-value">未知</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">
+                                            <i class="fas fa-chart-line"></i> 面试次数
+                                        </div>
+                                        <div id="interviewCount" class="info-value">0</div>
+                                    </div>
+                                </div>
+
+                                <div class="user-stats">
+                                    <h3>面试统计</h3>
+                                    <div class="stats-grid">
+                                        <div class="stat-item">
+                                            <div class="stat-value" id="totalInterviews">0</div>
+                                            <div class="stat-label">总面试次数</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value" id="avgScore">0</div>
+                                            <div class="stat-label">平均分数</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value" id="bestScore">0</div>
+                                            <div class="stat-label">最高分数</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <div class="stat-value" id="improvement">0%</div>
+                                            <div class="stat-label">进步幅度</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="user-actions">
+                                    <button class="btn btn-primary" id="editProfileBtn">
+                                        <i class="fas fa-edit"></i> 编辑资料
+                                    </button>
+                                    <button class="btn btn-warning" id="changePasswordBtn">
+                                        <i class="fas fa-key"></i> 修改密码
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 面试历史页面 -->
+            <div id="interviewHistoryPage" class="page">
+                <div class="container">
+                    <div class="page-container">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-history"></i>
+                                </div>
+                                <h2 class="card-title">面试历史</h2>
+                            </div>
+
+                            <div class="history-content">
+                                <div class="loading" id="historyLoading">
+                                    <div class="spinner"></div>
+                                    <p>正在加载面试历史...</p>
+                                </div>
+                                <div id="historyList" class="history-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统设置页面 -->
+            <div id="settingsPage" class="page">
+                <div class="container">
+                    <div class="page-container">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <h2 class="card-title">系统设置</h2>
+                            </div>
+
+                            <div class="settings-content">
+                                <div class="form-group">
+                                    <label for="themeSelect">
+                                        <i class="fas fa-palette"></i> 主题设置
+                                    </label>
+                                    <select id="themeSelect" class="form-control">
+                                        <option value="default">默认主题</option>
+                                        <option value="dark">深色模式</option>
+                                        <option value="light">浅色模式</option>
+                                        <option value="blue">蓝色主题</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="voiceSpeed">
+                                        <i class="fas fa-tachometer-alt"></i> 语音播放速度
+                                    </label>
+                                    <input type="range" id="voiceSpeed" min="0.5" max="2" step="0.1" value="1" class="form-control">
+                                    <div class="range-value">
+                                        <span id="speedValue">1.0x</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="autoRecord" checked>
+                                        <i class="fas fa-microphone"></i> 自动开始录音
+                                    </label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="showTips" checked>
+                                        <i class="fas fa-lightbulb"></i> 显示使用提示
+                                    </label>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>
+                                        <input type="checkbox" id="saveHistory" checked>
+                                        <i class="fas fa-save"></i> 自动保存面试记录
+                                    </label>
+                                </div>
+
+                                <div class="settings-actions">
+                                    <button class="btn btn-primary" id="saveSettingsBtn">
+                                        <i class="fas fa-save"></i> 保存设置
+                                    </button>
+                                    <button class="btn btn-warning" id="resetSettingsBtn">
+                                        <i class="fas fa-redo"></i> 恢复默认
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<script src = "js/start.js"></script>
+
+<script src="js/user.js"></script>
+<script src="js/start.js"></script>
+<script src="js/sideColumn.js"></script>
+<script src="js/init.js"></script>
 </body>
 </html>
