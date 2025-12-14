@@ -34,68 +34,71 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 检查用户是否已登录（通过Session）
-    async function checkSession() {
-        try {
-            console.log('检查Session状态...');
+async function checkSession() {
+    try {
+        console.log('检查Session状态...');
 
-            const response = await fetch(`${API_BASE_URL}/api/auth/session-check`, {
-                method: 'GET',
-                credentials: 'include' // 包含Cookie
-            });
+        // 如果是登出后的访问，不检查Session
+        const urlParams = new URLSearchParams(window.location.search);
+        const isLogout = urlParams.get('logout') === 'true';
 
-            console.log('Session检查响应状态:', response.status);
-
-            if (!response.ok) {
-                console.log('Session检查失败');
-                removeUserInfo();
-                return false;
-            }
-
-            const result = await response.json();
-            console.log('Session检查结果:', result);
-
-            if (result.success && result.data.isLoggedIn) {
-                console.log('用户已登录');
-
-                // 保存用户信息到localStorage（可选）
-                const userInfo = {
-                    username: result.data.username,
-                    userId: result.data.userId,
-                    userType: result.data.userType,
-                    isLoggedIn: true
-                };
-                saveUserInfo(userInfo);
-
-                // 如果是登录页面，则跳转到start.html
-                if (window.location.pathname.includes('user.html')) {
-                    console.log('用户已登录，跳转到start.html');
-                    setTimeout(() => {
-                        window.location.href = "start.html";
-                    }, 300);
-                }
-                return true;
-            } else {
-                // 用户未登录
-                console.log('用户未登录');
-                removeUserInfo();
-
-                // 如果不是登录页面，则跳转到登录页面
-                if (!window.location.pathname.includes('user.html')) {
-                    console.log('跳转到登录页面');
-                    window.location.href = "user.html";
-                }
-                return false;
-            }
-        } catch (error) {
-            console.error('检查Session状态失败:', error);
-            removeUserInfo();
-
-            if (!window.location.pathname.includes('user.html')) {
-                window.location.href = "user.html";
-            }
+        if (isLogout) {
+            console.log('登出后访问，跳过Session检查');
+            // 清除登出参数
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, document.title, newUrl);
             return false;
         }
+
+        const response = await fetch(`${API_BASE_URL}/api/auth/session-check`, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        console.log('Session检查响应状态:', response.status);
+
+        if (!response.ok) {
+            console.log('Session检查失败');
+            removeUserInfo();
+            return false;
+        }
+
+        const result = await response.json();
+        console.log('Session检查结果:', result);
+
+        if (result.success && result.data.isLoggedIn) {
+            console.log('用户已登录');
+
+            // 保存用户信息到localStorage
+            const userInfo = {
+                username: result.data.username,
+                userId: result.data.userId,
+                userType: result.data.userType,
+                isLoggedIn: true
+            };
+            saveUserInfo(userInfo);
+
+            // 如果是登录页面，则跳转到start.html
+            if (window.location.pathname.includes('user.html')) {
+                console.log('用户已登录，跳转到start.html');
+                // 添加延迟，让用户看到登录成功消息
+                setTimeout(() => {
+                    window.location.href = "start.html";
+                }, 1000);
+            }
+            return true;
+        } else {
+            // 用户未登录
+            console.log('用户未登录');
+            removeUserInfo();
+            return false;
+        }
+    } catch (error) {
+        console.error('检查Session状态失败:', error);
+        removeUserInfo();
+        return false;
     }
+}
 
     // ============ 2. 初始化登录表单 ============
     function initLoginForm() {

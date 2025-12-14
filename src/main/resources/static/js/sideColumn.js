@@ -297,11 +297,30 @@ document.head.appendChild(style);
 // ============ 退出登录功能 ============
 function logoutUser() {
     if (confirm('确定要退出登录吗？')) {
-        // 清除用户登录状态
-        localStorage.removeItem('user_info');
-        
-        // 跳转到登录页面
-        window.location.href = 'login.html'; // 根据实际登录页面路径调整
+        try {
+            // 1. 先清除本地数据
+            localStorage.removeItem('user_info');
+            sessionStorage.removeItem('user_info');
+
+            // 2. 调用服务器端登出接口
+            const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+                method: 'POST',
+                credentials: 'include' // 包含Cookie
+            });
+
+            if (response.ok) {
+                console.log('服务器端登出成功');
+            } else {
+                console.warn('服务器端登出失败，但继续本地登出');
+            }
+
+        } catch (error) {
+            console.error('登出请求出错:', error);
+        } finally {
+            // 3. 无论如何都跳转到登录页面
+            // 使用 replace 而不是 href，防止后退按钮返回
+            window.location.replace('user.html?logout=true');
+        }
     }
 }
 
