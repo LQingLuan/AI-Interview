@@ -14,10 +14,13 @@
 
 <table>
   <tr>
-<img width="1918" height="1078" alt="ai_interview" src="https://github.com/user-attachments/assets/7eaf4a5e-e179-44b7-9b55-7d526800c2e7" />
-<img width="1918" height="1078" alt="2" src="https://github.com/user-attachments/assets/b0c456b5-9a12-4d5a-9fda-67c2b509032a" />
-<img width="1920" height="1080" alt="3" src="https://github.com/user-attachments/assets/341ca157-ba3c-436e-98c4-81f93aea4d9d" />
-<img width="1920" height="1080" alt="4" src="https://github.com/user-attachments/assets/ad8bde17-a33f-4538-a1d2-8a20a6fe3cfc" />
+<img width="1915" height="1021" alt="1" src="https://github.com/user-attachments/assets/c0075358-c083-41d6-b837-f0d48ad9e3f5" />
+<img width="1918" height="1015" alt="2" src="https://github.com/user-attachments/assets/ebea000b-dd34-47b2-824f-bed753c66022" />
+<img width="1918" height="967" alt="3" src="https://github.com/user-attachments/assets/e088e6be-c9b0-4262-bf08-f5ff668e8e17" />
+<img width="1918" height="972" alt="4" src="https://github.com/user-attachments/assets/67aee4e5-9597-48ae-bffe-1d7ffec8a649" />
+<img width="1918" height="967" alt="5" src="https://github.com/user-attachments/assets/66dc0f96-cb71-4b6d-a3cb-79fbb2064297" />
+<img width="1917" height="967" alt="6" src="https://github.com/user-attachments/assets/2e3bbf1a-5ddd-433e-a958-cded79bf06c7" />
+
   </tr>
 </table>
 ### 📋 前置要求
